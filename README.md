@@ -78,6 +78,15 @@ $env:VITE_BASE_PATH="/mixtaper/"; $env:VITE_PRERENDER="true"; npm run build:page
 
 Output goes to `.output/public/`.
 
+## License
+
+Mixtaper is **dual-licensed**:
+
+- **Non-commercial use** — free under the [PolyForm Noncommercial License 1.0.0](LICENSE) (personal projects, hobbies, education, non-profits, etc.)
+- **Commercial use** — requires a separate license; see [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md)
+
+Copyright © 2026 [Armando Pires](https://github.com/mr-arpg). The author reserves the right to commercialize this software.
+
 ## Built with
 
 - [TanStack Start](https://tanstack.com/start)
