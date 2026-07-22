@@ -1,6 +1,6 @@
 # Mixtaper
 
-**[mixtaper.mr-arpg.github.io](https://mr-arpg.github.io/mixtaper/)** — turn a YouTube playlist into a nostalgic mixtape CD you can share.
+**[mr-arpg.github.io/mixtaper](https://mr-arpg.github.io/mixtaper/)** — turn a YouTube playlist into a nostalgic mixtape CD you can share.
 
 Paste a playlist link, write a handwritten title on the disc, and send someone a URL. Everything lives in the link — no accounts, no backend, no tracking.
 
@@ -58,8 +58,13 @@ The site deploys automatically on every push to `main` via [GitHub Actions](.git
 
 ### One-time repo setup
 
-1. Open **Settings → Pages** in the GitHub repo
-2. Under **Build and deployment**, set **Source** to **GitHub Actions**
+1. Open **[Settings → Pages](https://github.com/mr-arpg/mixtaper/settings/pages)** in the GitHub repo
+2. Under **Build and deployment**, set **Source** to **Deploy from a branch**
+3. Set **Branch** to `gh-pages` and folder **`/ (root)`**, then click **Save**
+
+The workflow pushes the built site to the `gh-pages` branch on every push to `main`. The first successful run creates that branch — if it does not appear yet, re-run the workflow from the **Actions** tab after it completes.
+
+> **Note:** If you previously set Source to **GitHub Actions**, switch it to **Deploy from a branch** → `gh-pages` as described above.
 
 ### Local Pages build
 
