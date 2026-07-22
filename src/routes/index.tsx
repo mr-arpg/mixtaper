@@ -205,37 +205,28 @@ function MixtapePage() {
                   className="h-full w-full select-none"
                   draggable={false}
                 />
-                {/* Handwritten title */}
+                {/* Handwritten title — placed on the lower arc of the disc */}
                 <div
                   className="pointer-events-none absolute inset-0"
                   style={{ fontFamily: "'Caveat', cursive" }}
                 >
                   <div
-                    className="absolute left-1/2 top-[18%] w-[80%] -translate-x-1/2 text-center"
+                    className="absolute left-1/2 top-[72%] -translate-x-1/2 -translate-y-1/2 text-center"
                     style={{
-                      transform: "translate(-50%, 0) rotate(-8deg)",
+                      width: "58%",
                       color: "#6b2fd6",
                       textShadow: "0 0 1px rgba(107,47,214,0.4)",
-                      fontSize: "clamp(1.5rem, 5vw, 3.5rem)",
+                      fontSize: "clamp(1.25rem, 4.2vw, 2.75rem)",
                       fontWeight: 700,
-                      lineHeight: 1,
+                      lineHeight: 1.05,
+                      transform: "translate(-50%, -50%) rotate(-6deg)",
                     }}
                   >
                     {title}
                   </div>
-                  <div
-                    className="absolute bottom-[18%] left-1/2 -translate-x-1/2 text-center"
-                    style={{
-                      color: "#6b2fd6",
-                      fontSize: "clamp(1.25rem, 4vw, 2.5rem)",
-                      fontWeight: 700,
-                      lineHeight: 1,
-                    }}
-                  >
-                    #{trackIndex}
-                  </div>
                 </div>
               </div>
+
 
               {/* Play hint when paused */}
               {!playing && (
