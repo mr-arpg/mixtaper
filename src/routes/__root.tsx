@@ -74,13 +74,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Mixtaper" },
+      { title: "Your CD, mixtaped with love" },
       {
         name: "description",
         content:
           "A nostalgic mixtape CD player. Craft your own mix by sharing a YouTube playlist link with a handwritten title.",
       },
-      { property: "og:title", content: "Mixtaper" },
+      { property: "og:title", content: "Your CD, mixtaped with love" },
       {
         property: "og:description",
         content:

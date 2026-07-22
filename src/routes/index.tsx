@@ -8,13 +8,13 @@ const DSEG7_FONT = "'DSEG7 Classic', monospace";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Mixtaper" },
+      { title: "Your CD, mixtaped with love" },
       {
         name: "description",
         content:
           "A nostalgic mixtape CD player. Craft your own mix by sharing a YouTube playlist link with a handwritten title.",
       },
-      { property: "og:title", content: "Mixtaper" },
+      { property: "og:title", content: "Your CD, mixtaped with love" },
       {
         property: "og:description",
         content:
