@@ -85,7 +85,7 @@ Mixtaper is **dual-licensed**:
 - **Non-commercial use** — free under the [PolyForm Noncommercial License 1.0.0](LICENSE) (personal projects, hobbies, education, non-profits, etc.)
 - **Commercial use** — requires a separate license; see [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md)
 
-Copyright © 2026 [Armando Pires](https://github.com/mr-arpg). The author reserves the right to commercialize this software.
+Copyright © 2026 [Armando Gonçalves](https://github.com/mr-arpg).
 
 ## Built with
 

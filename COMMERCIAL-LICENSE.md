@@ -20,11 +20,8 @@ Commercial use includes (but is not limited to):
 - Using the software to generate revenue (ads, subscriptions, sponsorships, etc.)
 - Using the software on behalf of a for-profit company without a commercial license
 
-The copyright holder retains the right to commercialize this software and to
-grant commercial licenses to others.
-
 ## Contact
 
 For commercial licensing, contact:
 
-**Armando Pires** — [piresrafaelarmando2002@gmail.com](mailto:piresrafaelarmando2002@gmail.com)
+**Armando Gonçalves** — [piresrafaelarmando2002@gmail.com](mailto:piresrafaelarmando2002@gmail.com)
