@@ -251,30 +251,30 @@ function MixtapePage() {
             </button>
 
             {/* Controls */}
-            <div className="mt-12 flex items-center gap-6">
+            <div className="mt-8 flex items-center gap-4">
               <button
                 type="button"
                 onClick={prev}
                 aria-label="Previous track"
                 className="text-red-600 transition-transform hover:scale-110 active:scale-95"
               >
-                <svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M6 5v14l-1 0V5h1zm14 0v14L8 12l12-7z" />
                 </svg>
               </button>
 
               <div
-                className="flex h-16 w-24 items-center justify-center rounded-md border border-red-900/50 bg-black shadow-[inset_0_0_20px_rgba(255,0,0,0.15)]"
+                className="flex h-12 w-20 items-center justify-center rounded-md border border-red-900/50 bg-black shadow-[inset_0_0_16px_rgba(255,0,0,0.15)]"
                 aria-label={`Track ${trackLabel}`}
               >
                 <span
                   style={{
                     fontFamily: "'Share Tech Mono', monospace",
                     color: "#ff2a2a",
-                    fontSize: "2.75rem",
+                    fontSize: "2rem",
                     letterSpacing: "0.1em",
                     textShadow:
-                      "0 0 6px rgba(255,42,42,0.9), 0 0 14px rgba(255,42,42,0.6)",
+                      "0 0 5px rgba(255,42,42,0.9), 0 0 10px rgba(255,42,42,0.6)",
                   }}
                 >
                   {trackLabel}
@@ -287,7 +287,7 @@ function MixtapePage() {
                 aria-label="Next track"
                 className="text-red-600 transition-transform hover:scale-110 active:scale-95"
               >
-                <svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18 5v14h1V5h-1zM4 5l12 7L4 19V5z" />
                 </svg>
               </button>
