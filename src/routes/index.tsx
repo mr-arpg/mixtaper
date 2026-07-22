@@ -1,17 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState, useCallback } from "react";
-import cdAsset from "@/assets/sony_cd.png.asset.json";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import "@fontsource/dseg7-classic/400.css";
+import cdAsset from "@/assets/sony_cd.png";
+
+const DSEG7_FONT = "'DSEG7 Classic', monospace";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Awesome Mix — Your personal CD" },
+      { title: "Mixtaper" },
       {
         name: "description",
         content:
           "A nostalgic mixtape CD player. Craft your own mix by sharing a YouTube playlist link with a handwritten title.",
       },
-      { property: "og:title", content: "Awesome Mix — Your personal CD" },
+      { property: "og:title", content: "Mixtaper" },
       {
         property: "og:description",
         content:
@@ -23,7 +26,7 @@ export const Route = createFileRoute("/")({
     links: [
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Share+Tech+Mono&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Sedgwick+Ave+Display&display=swap",
       },
     ],
   }),
@@ -54,6 +57,184 @@ function loadYouTubeAPI(): Promise<void> {
     document.head.appendChild(tag);
   });
   return ytApiLoading;
+}
+
+function isLastPlaylistTrack(player: any): boolean {
+  try {
+    const idx = player?.getPlaylistIndex?.();
+    const playlist = player?.getPlaylist?.();
+    return (
+      typeof idx === "number" &&
+      idx >= 0 &&
+      Array.isArray(playlist) &&
+      playlist.length > 0 &&
+      idx >= playlist.length - 1
+    );
+  } catch {
+    return false;
+  }
+}
+
+function jumpToFirstTrack(player: any, listId: string) {
+  try {
+    player.playVideoAt(0);
+  } catch {
+    player.loadPlaylist?.({ listType: "playlist", list: listId, index: 0 });
+  }
+}
+
+function SevenSegmentDisplay({ value }: { value: string }) {
+  const ghostDigits = "8".repeat(value.length);
+  const layerStyle = {
+    fontFamily: DSEG7_FONT,
+    fontSize: "2rem",
+    letterSpacing: "0.05em",
+    lineHeight: 1,
+  };
+
+  return (
+    <div className="relative h-full w-full">
+      <span
+        aria-hidden
+        className="absolute inset-0 flex items-center justify-center"
+        style={{
+          ...layerStyle,
+          color: "#660000",
+          opacity: 0.12,
+        }}
+      >
+        {ghostDigits}
+      </span>
+      <span
+        className="absolute inset-0 flex items-center justify-center"
+        style={{
+          ...layerStyle,
+          color: "#ff0000",
+          textShadow: "0 0 4px currentColor, 0 0 8px rgba(255,0,0,0.5)",
+        }}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+const TITLE_FONT = "'Sedgwick Ave Display', cursive";
+const TITLE_LINE_LIMITS = [21, 15, 15, 15] as const;
+// All sizes in cqw — scale 1:1 with the square CD container width.
+const TITLE_FONT_SIZE = "7.75cqw";
+const TITLE_LINE_HEIGHT = "8.35cqw";
+const TITLE_ZONE_WIDTH = "84cqw";
+const TITLE_ZONE_GAP = "0.45cqw";
+const TOP_ZONE = { top: "6cqw", height: "36cqw" } as const;
+const BOTTOM_ZONE = { top: "58cqw", height: "36cqw" } as const;
+const TITLE_TEXT_STYLE = {
+  color: "#6b2fd6",
+  textShadow: "0 0 0.15cqw rgba(107,47,214,0.4)",
+  fontSize: TITLE_FONT_SIZE,
+  lineHeight: TITLE_LINE_HEIGHT,
+} as const;
+
+function splitTitleIntoFourLines(title: string): [string, string, string, string] {
+  const words = title.trim().split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let wordIdx = 0;
+
+  for (const limit of TITLE_LINE_LIMITS) {
+    if (wordIdx >= words.length) {
+      lines.push("");
+      continue;
+    }
+
+    const lineWords: string[] = [];
+    while (wordIdx < words.length) {
+      const candidate = [...lineWords, words[wordIdx]].join(" ");
+      if (lineWords.length > 0 && candidate.length > limit) break;
+      lineWords.push(words[wordIdx]);
+      wordIdx++;
+    }
+    lines.push(lineWords.join(" "));
+  }
+
+  if (wordIdx < words.length) {
+    const overflow = words.slice(wordIdx).join(" ");
+    lines[3] = lines[3] ? `${lines[3]} ${overflow}` : overflow;
+  }
+
+  return [lines[0] ?? "", lines[1] ?? "", lines[2] ?? "", lines[3] ?? ""];
+}
+
+function CdTitleLine({ text }: { text: string }) {
+  if (!text) return null;
+
+  return (
+    <div
+      className="w-full overflow-hidden whitespace-nowrap text-center"
+      style={TITLE_TEXT_STYLE}
+    >
+      {text}
+    </div>
+  );
+}
+
+function CdTitleSection({
+  lines,
+  bandTop,
+  bandHeight,
+  rotation,
+}: {
+  lines: [string, string];
+  bandTop: string;
+  bandHeight: string;
+  rotation: number;
+}) {
+  const [line1, line2] = lines;
+  if (!line1 && !line2) return null;
+
+  return (
+    <div
+      className="absolute left-1/2 flex flex-col items-center justify-center text-center"
+      style={{
+        top: bandTop,
+        width: TITLE_ZONE_WIDTH,
+        height: bandHeight,
+        gap: TITLE_ZONE_GAP,
+        transform: `translate(-50%, 0) rotate(${rotation}deg)`,
+      }}
+    >
+      <CdTitleLine text={line1} />
+      <CdTitleLine text={line2} />
+    </div>
+  );
+}
+
+function CdTitle({ title }: { title: string }) {
+  const lines = useMemo(() => splitTitleIntoFourLines(title), [title]);
+  const topLines = useMemo(() => [lines[0], lines[1]] as [string, string], [lines]);
+  const bottomLines = useMemo(
+    () => [lines[2], lines[3]] as [string, string],
+    [lines],
+  );
+
+  return (
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{ fontFamily: TITLE_FONT }}
+    >
+      <CdTitleSection
+        lines={topLines}
+        bandTop={TOP_ZONE.top}
+        bandHeight={TOP_ZONE.height}
+        rotation={-6}
+      />
+      <CdTitleSection
+        lines={bottomLines}
+        bandTop={BOTTOM_ZONE.top}
+        bandHeight={BOTTOM_ZONE.height}
+        rotation={6}
+      />
+    </div>
+  );
 }
 
 function MixtapePage() {
@@ -91,6 +272,7 @@ function MixtapePage() {
         playerVars: {
           listType: "playlist",
           list: params.list,
+          loop: 1,
           autoplay: 0,
           controls: 0,
           disablekb: 1,
@@ -100,16 +282,28 @@ function MixtapePage() {
         events: {
           onStateChange: (e: any) => {
             const YT = window.YT;
-            if (e.data === YT.PlayerState.PLAYING) setPlaying(true);
-            else if (
-              e.data === YT.PlayerState.PAUSED ||
-              e.data === YT.PlayerState.ENDED
-            )
+            const player = playerRef.current;
+            if (!player) return;
+
+            if (e.data === YT.PlayerState.PLAYING) {
+              setPlaying(true);
+            } else if (e.data === YT.PlayerState.PAUSED) {
               setPlaying(false);
-            // Update track index
+            } else if (e.data === YT.PlayerState.ENDED) {
+              if (isLastPlaylistTrack(player)) {
+                window.setTimeout(() => {
+                  jumpToFirstTrack(player, params.list);
+                  setTrackIndex(1);
+                  setPlaying(true);
+                }, 100);
+                return;
+              }
+              setPlaying(false);
+            }
+
             try {
-              const idx = playerRef.current?.getPlaylistIndex?.();
-              if (typeof idx === "number") setTrackIndex(idx + 1);
+              const idx = player.getPlaylistIndex?.();
+              if (typeof idx === "number" && idx >= 0) setTrackIndex(idx + 1);
             } catch {}
           },
         },
@@ -156,8 +350,16 @@ function MixtapePage() {
   }, [playing]);
 
   const next = useCallback(() => {
-    playerRef.current?.nextVideo?.();
-  }, []);
+    const player = playerRef.current;
+    if (!player) return;
+    if (isLastPlaylistTrack(player)) {
+      jumpToFirstTrack(player, params.list);
+      setTrackIndex(1);
+      setPlaying(true);
+      return;
+    }
+    player.nextVideo?.();
+  }, [params.list]);
   const prev = useCallback(() => {
     playerRef.current?.previousVideo?.();
   }, []);
@@ -191,54 +393,24 @@ function MixtapePage() {
                 aspectRatio: "1 / 1",
               }}
             >
-              <div
-                className="relative h-full w-full"
-                style={{
-                  transform: `rotate(${rotation}deg)`,
-                  transition: playing ? "none" : "transform 0.6s ease-out",
-                  willChange: "transform",
-                }}
-              >
-                <img
-                  src={cdAsset.url}
-                  alt="Mixtape CD"
-                  className="h-full w-full select-none"
-                  draggable={false}
-                />
-                {/* Handwritten title — placed on the lower arc of the disc */}
+              <div className="relative h-full w-full transition-transform duration-200 ease-out group-hover:scale-[1.03]">
                 <div
-                  className="pointer-events-none absolute inset-0"
-                  style={{ fontFamily: "'Caveat', cursive" }}
+                  className="@container relative h-full w-full overflow-hidden"
+                  style={{
+                    transform: `rotate(${rotation}deg)`,
+                    transition: playing ? "none" : "transform 0.6s ease-out",
+                    willChange: "transform",
+                  }}
                 >
-                  <div
-                    className="absolute left-1/2 top-[72%] -translate-x-1/2 -translate-y-1/2 text-center"
-                    style={{
-                      width: "58%",
-                      color: "#6b2fd6",
-                      textShadow: "0 0 1px rgba(107,47,214,0.4)",
-                      fontSize: "clamp(1.25rem, 4.2vw, 2.75rem)",
-                      fontWeight: 700,
-                      lineHeight: 1.05,
-                      transform: "translate(-50%, -50%) rotate(-6deg)",
-                    }}
-                  >
-                    {title}
-                  </div>
+                  <img
+                    src={cdAsset}
+                    alt="Mixtape CD"
+                    className="h-full w-full select-none"
+                    draggable={false}
+                  />
+                  <CdTitle title={title} />
                 </div>
               </div>
-
-
-              {/* Play hint when paused */}
-              {!playing && (
-                <div
-                  className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100"
-                  aria-hidden
-                >
-                  <div className="rounded-full bg-black/60 px-4 py-2 text-xs uppercase tracking-widest">
-                    Click to play
-                  </div>
-                </div>
-              )}
             </button>
 
             {/* Controls */}
@@ -258,18 +430,7 @@ function MixtapePage() {
                 className="flex h-12 w-20 items-center justify-center rounded-md border border-red-900/50 bg-black shadow-[inset_0_0_16px_rgba(255,0,0,0.15)]"
                 aria-label={`Track ${trackLabel}`}
               >
-                <span
-                  style={{
-                    fontFamily: "'Share Tech Mono', monospace",
-                    color: "#ff2a2a",
-                    fontSize: "2rem",
-                    letterSpacing: "0.1em",
-                    textShadow:
-                      "0 0 5px rgba(255,42,42,0.9), 0 0 10px rgba(255,42,42,0.6)",
-                  }}
-                >
-                  {trackLabel}
-                </span>
+                <SevenSegmentDisplay value={trackLabel} />
               </div>
 
               <button
