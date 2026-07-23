@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mr-arpg.github.io/mixtaper/sitemap.xml
