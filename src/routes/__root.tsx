@@ -12,6 +12,8 @@ import { type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import cdFavicon from "@/assets/sony_cd.png";
 
+const GA_MEASUREMENT_ID = "G-PJG9WC3ZHW";
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -96,6 +98,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: cdFavicon, type: "image/png", sizes: "32x32" },
       { rel: "apple-touch-icon", href: cdFavicon },
+    ],
+    scripts: [
+      {
+        src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`,
+        async: true,
+      },
+      {
+        children: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_MEASUREMENT_ID}');`,
+      },
     ],
   }),
   shellComponent: RootShell,
