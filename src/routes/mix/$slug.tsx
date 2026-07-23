@@ -1,24 +1,40 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
-import { getMixPageUrl, getSeoEntry, type SeoEntry } from "@/lib/seo-data";
+import {
+  DEFAULT_SEO,
+  getMixPageUrl,
+  getSeoEntry,
+  type SeoEntry,
+} from "@/lib/seo-data";
+
+function sanitizeSlug(slug: string): string {
+  return slug.replace(/^\/+|\/+$/g, "").trim();
+}
 
 export const Route = createFileRoute("/mix/$slug")({
   loader: ({ params }): SeoEntry => {
-    const entry = getSeoEntry(params.slug);
+    const slug = sanitizeSlug(params.slug ?? "");
+    const entry = getSeoEntry(slug);
     if (!entry) throw notFound();
     return entry;
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: loaderData.title },
-      { name: "description", content: loaderData.description },
-      { property: "og:title", content: loaderData.title },
-      { property: "og:description", content: loaderData.description },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "canonical", href: getMixPageUrl(loaderData.slug) }],
-  }),
+  head: ({ loaderData }) => {
+    const title = loaderData?.title || DEFAULT_SEO.title;
+    const description = loaderData?.description || DEFAULT_SEO.description;
+    const slug = loaderData?.slug;
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: slug ? [{ rel: "canonical", href: getMixPageUrl(slug) }] : [],
+    };
+  },
   component: MixSeoPage,
 });
 
